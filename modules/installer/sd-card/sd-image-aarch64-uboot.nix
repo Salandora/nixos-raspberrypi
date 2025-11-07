@@ -20,18 +20,18 @@
 
   sdImage = {
     imageBaseName = let
-      cfg = config.boot.loader.raspberryPi;
+      cfg = config.boot.loader.rPi;
     in "nixos-sd-image-rpi${cfg.variant}-${cfg.bootloader}";
 
     firmwareSize = 128;
     populateFirmwareCommands = let
-      uboot = config.boot.loader.raspberryPi.ubootPackage;
-      raspberrypifw = config.boot.loader.raspberryPi.firmwarePackage;
+      uboot = config.boot.loader.rPi.ubootPackage;
+      raspberrypifw = config.boot.loader.rPi.firmwarePackage;
       configTxt = config.hardware.raspberry-pi.config-output;
       rpifwdir = "${raspberrypifw}/share/raspberrypi/boot";
       populateFirmware = pkgs.writeShellApplication {
         name = "raspberry-pi-firmware";
-        text = builtins.readFile ../../system/boot/loader/raspberrypi/firmware.sh;
+        text = builtins.readFile ../../system/boot/loader/rPi/firmware.sh;
       };
     in ''
       # Add bootloader-independent firmware files: config.txt, bootcode, DTBs

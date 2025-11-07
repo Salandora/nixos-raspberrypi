@@ -3,7 +3,7 @@
 with lib;
 
 let
-  cfg = config.boot.loader.raspberryPi;
+  cfg = config.boot.loader.rPi;
   isAarch64 = pkgs.stdenv.hostPlatform.isAarch64;
 
   ubootBinName = if isAarch64 then "u-boot-rpi-arm64.bin" else "u-boot-rpi.bin";
@@ -184,17 +184,9 @@ let
 in
 
 {
-  disabledModules = [
-    # the module has been remove in nixpkgs, but that shouldn't prevent us
-    # from using the now free (!) name for our module
-    # mkRemovedOptionModule in `"modulesPath + rename.nix"`, unfortunately,
-    # prevents us from doing so in upstream nixpkgs
-    { key = "removedOptionModule#boot_loader_raspberryPi"; }
-  ];
-
   options = {
 
-    boot.loader.raspberryPi = {
+    boot.loader.rPi = {
       enable = mkOption {
         default = false;
         type = types.bool;
@@ -405,8 +397,8 @@ in
         '';
       };
       boot.loader.grub.enable = false;
-      boot.loader.raspberryPi.firmwarePopulateCmd = populateCmds.${cfg.bootloader}.firmware;
-      boot.loader.raspberryPi.bootPopulateCmd = populateCmds.${cfg.bootloader}.boot;
+      boot.loader.rPi.firmwarePopulateCmd = populateCmds.${cfg.bootloader}.firmware;
+      boot.loader.rPi.bootPopulateCmd = populateCmds.${cfg.bootloader}.boot;
     })
 
     (mkIf (cfg.enable && (cfg.bootloader == "kernel")) {

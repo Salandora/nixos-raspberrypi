@@ -81,7 +81,7 @@
         inherit config lib pkgs self;
       };
 
-      bootloader = import ./modules/system/boot/loader/raspberrypi;
+      bootloader = import ./modules/system/boot/loader/rpi;
       # default = import ./modules/raspberrypi.nix;
       default = { config, lib, pkgs, ... }: import ./modules/raspberrypi.nix {
         inherit config lib pkgs self;

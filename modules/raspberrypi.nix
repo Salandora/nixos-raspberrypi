@@ -2,14 +2,14 @@
 
 {
   imports = [
-    ./system/boot/loader/raspberrypi
+    ./system/boot/loader/rpi
     ./configtxt.nix
     ./udev.nix
     # config.txt is in `config.hardware.raspberry-pi.config-generated`
     ./configtxt-config.nix
   ];
 
-  boot.loader.raspberryPi = {
+  boot.loader.rPi = {
     enable = true;
   };
 

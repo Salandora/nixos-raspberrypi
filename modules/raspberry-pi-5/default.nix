@@ -3,7 +3,7 @@
 {
   imports = [ ../raspberrypi.nix ];
 
-  boot.loader.raspberryPi = {
+  boot.loader.rPi = {
     variant = "5";
     bootloader = lib.mkDefault "kernelboot";
     firmwarePackage = lib.mkDefault self.packages.${pkgs.hostPlatform.system}.raspberrypifw;
