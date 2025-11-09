@@ -6,7 +6,7 @@
     (modulesPath + "/installer/sd-card/sd-image.nix")
   ];
 
-  # boot stuff is already configured with `boot.loader.raspberryPi` and
+  # boot stuff is already configured with `boot.loader.rPi` and
   # `hardware.raspberry-pi.config`
 
   # with default options set by sdImage it won't be mounted at all
