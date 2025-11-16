@@ -6,6 +6,28 @@ self: super: { # final: prev:
 
   # see `extra/git_hash` for a matching hash of the `raspberrypi/linux`
 
+ raspberrypifw_20251111 = super.raspberrypifw.overrideAttrs (old: {
+    # this release is untagged in the upstream for linux 6.12.57
+    version = "1.20251111";
+    src = super.fetchFromGitHub {
+      owner = "raspberrypi";
+      repo = "firmware";
+      rev = "65796398ca3bbb46a8911fd424c7659c96be6eb6";
+      hash = "";
+    };
+  });
+
+  raspberrypifw_20250916 = super.raspberrypifw.overrideAttrs (old: {
+    # this release is untagged in the upstream for linux 6.12.47
+    version = "1.20250916";
+    src = super.fetchFromGitHub {
+      owner = "raspberrypi";
+      repo = "firmware";
+      rev = "e57538c91b473d23f98bf41fcffdc61b4198a632";
+      hash = "sha256-5RdQUkG5PXvMMjmEEVaCYKd8Pl/ppbpYoYCCZG2l/n4=";
+    };
+  });
+
   raspberrypifw_20250915 = super.raspberrypifw.overrideAttrs (old: {
     # https://github.com/raspberrypi/firmware/releases/tag/1.20250915
     version = "1.20250915";
@@ -119,6 +141,7 @@ self: super: { # final: prev:
   });
 
   raspberrypiWirelessFirmware_20251008 = super.raspberrypiWirelessFirmware.overrideAttrs (old: {
+    __intentionallyOverridingVersion = true;
     version = "2025-10-02";
     srcs = [
       # https://github.com/RPi-Distro/bluez-firmware/commits/pios/trixie
@@ -143,6 +166,7 @@ self: super: { # final: prev:
   });
 
   raspberrypiWirelessFirmware_20250408 = super.raspberrypiWirelessFirmware.overrideAttrs (old: {
+    __intentionallyOverridingVersion = true;
     version = "2025-04-08";
     srcs = [
       # https://github.com/RPi-Distro/bluez-firmware/commits/bookworm

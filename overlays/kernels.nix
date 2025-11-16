@@ -51,12 +51,27 @@ let
 
   # Linux
 
-  linux_v6_12_44_argsOverride = {
-    modDirVersion = "6.12.44";
-    tag = "unstable_20250829";
-    rev = "6c61955254d5c1af6687e79b1de4db7e76c9ff68"; # 6.12.44
-    srcHash = "sha256-5v28FioaPYSV6HYGiJn4X+PZ7byOPDCVKZfU0JukV3A=";
+  linux_v6_12_57_argsOverride = {
+    modDirVersion = "6.12.57";
+    tag = "unstable_20250916";
+    rev = "8a243ecde1f6447b8e237f2c1c67c0bb67d16d67"; # 6.12.57
+    srcHash = "";
   };
+
+  linux_v6_12_47_argsOverride = {
+    modDirVersion = "6.12.47";
+    tag = "stable_20250916";
+    rev = "359f37f0faefb712add32a39f98751aea67d5c1f"; # 6.12.47
+    srcHash = "sha256-HG8Oc04V2t54l0SOn4gKmNJWQUrZfjWusgKcWvx74H0==";
+  };
+
+
+  # linux_v6_12_44_argsOverride = {
+  #   modDirVersion = "6.12.44";
+  #   tag = "unstable_20250829";
+  #   rev = "6c61955254d5c1af6687e79b1de4db7e76c9ff68"; # 6.12.44
+  #   srcHash = "sha256-5v28FioaPYSV6HYGiJn4X+PZ7byOPDCVKZfU0JukV3A=";
+  # };
 
   linux_v6_12_34_argsOverride = {
     # https://github.com/raspberrypi/linux/releases/tag/stable_20250702
@@ -219,7 +234,9 @@ let
     ];
   };
 in {
-  "6_12_44" = linux_v6_12_44_argsOverride;
+  "6_12_57" = linux_v6_12_57_argsOverride;
+  "6_12_47" = linux_v6_12_47_argsOverride;
+  #"6_12_44" = linux_v6_12_44_argsOverride;
   "6_12_34" = linux_v6_12_34_argsOverride;
   "6_12_25" = linux_v6_12_25_argsOverride;
   "6_6_74" = linux_v6_6_74_argsOverride;
