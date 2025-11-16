@@ -15,8 +15,8 @@
     # use fork to allow disabling modules introduced by mkRemovedOptionModule
     # and similar functions
     # see PR nixos:nixpkgs#398456 (https://github.com/NixOS/nixpkgs/pull/398456)
-    nixpkgs.url = "github:nvmd/nixpkgs/modules-with-keys-25.05";
-    # nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    # nixpkgs.url = "github:nvmd/nixpkgs/modules-with-keys-25.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     argononed = {
       # url = "git+file:../argononed?shallow=1";
@@ -178,7 +178,7 @@
 
       # see legacyPackages.<system>.linuxAndFirmware for other versions of 
       # the bundle
-      inherit (pkgs.linuxAndFirmware.default)
+      inherit (pkgs.linuxAndFirmware.latest)
         linux_rpi5 linuxPackages_rpi5
         linux_rpi4 linuxPackages_rpi4
         linux_rpi3 linuxPackages_rpi3

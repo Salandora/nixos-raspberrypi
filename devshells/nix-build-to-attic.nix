@@ -44,22 +44,22 @@ writeShellApplication {
     )
 
     declare -a packages=(
-      "ffmpeg_7"
-      "ffmpeg_7-headless"
+      # "ffmpeg_7"
+      # "ffmpeg_7-headless"
 
       # "kodi"
-      "kodi-gbm"
+      # "kodi-gbm"
       # "kodi-wayland"
 
-      "libcamera"
-      "libpisp"
+      # "libcamera"
+      # "libpisp"
       # "libraspberrypi"
 
       "raspberrypi-utils"
       "raspberrypi-udev-rules"
-      "rpicam-apps"
+      # "rpicam-apps"
 
-      "vlc"
+      # "vlc"
 
       # linuxAndFirmware.default.*
       "linux_rpi02"
@@ -71,7 +71,7 @@ writeShellApplication {
 
       # pisugar3-kmod
       # pisugar2-kmod
-      pisugar-power-manager-rs
+      # pisugar-power-manager-rs
     )
 
     for i in "''${packages[@]}"; do
