@@ -8,7 +8,7 @@ self: super: { # final: prev:
 
   raspberrypi-utils = super.callPackage ../pkgs/raspberrypi/raspberrypi-utils.nix {};
 
-  rpi-userland = self.libraspberrypi;
+  # rpi-userland = self.libraspberrypi;
 
   rpicam-apps = super.callPackage ../pkgs/raspberrypi/rpicam-apps.nix {
     libcamera = self.libcamera_rpi;
