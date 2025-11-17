@@ -66,6 +66,7 @@
           nix-output-monitor
           bash-language-server
           shellcheck
+          attic-client
           (pkgs.callPackage ./devshells/nix-build-to-cachix.nix {})
           (pkgs.callPackage ./devshells/nix-build-to-attic.nix {})
         ];
