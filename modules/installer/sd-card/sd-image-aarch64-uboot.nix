@@ -18,11 +18,10 @@
   ];
   fileSystems."/".options = [ "noatime" ];
 
+  image.baseName =let
+    cfg = config.boot.loader.rPi;
+  in "nixos-sd-image-rpi${cfg.variant}-${cfg.bootloader}";
   sdImage = {
-    imageBaseName = let
-      cfg = config.boot.loader.rPi;
-    in "nixos-sd-image-rpi${cfg.variant}-${cfg.bootloader}";
-
     firmwareSize = 128;
     populateFirmwareCommands = let
       uboot = config.boot.loader.rPi.ubootPackage;

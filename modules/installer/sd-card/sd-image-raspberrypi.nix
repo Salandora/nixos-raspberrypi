@@ -25,11 +25,11 @@
   boot.loader.rPi.bootloader = lib.mkIf
     (config.boot.loader.rPi.variant == "5") "kernel";
 
-  sdImage = {
-    imageBaseName = let
-      cfg = config.boot.loader.rPi;
-    in "nixos-sd-image-rpi${cfg.variant}-${cfg.bootloader}";
 
+  image.baseName = let
+    cfg = config.boot.loader.rPi;
+  in "nixos-sd-image-rpi${cfg.variant}-${cfg.bootloader}";
+  sdImage = {
     # this needs to be big enough to accomodate all kernels and initrds of previous generations
     firmwareSize = 1024;
     firmwarePartitionID = "0x2175794e";
