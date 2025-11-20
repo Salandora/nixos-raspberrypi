@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ lib, ... }:
 
 {
   hardware.raspberry-pi.config.all.dt-overlays = {

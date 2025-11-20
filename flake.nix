@@ -173,7 +173,6 @@
     });
 
     nixosConfigurations = let
-
       # TIP: To create "regular" nixosConfigurations look for
       # `nixosSystem` and `nixosSystemFull` helpers in `lib/`
       mkNixOSRPiInstaller = modules: self.lib.nixosInstaller {

@@ -1,4 +1,4 @@
-{ self, config, lib, pkgs, ... }:
+{ self, lib, pkgs, ... }:
 
 {
   imports = [ ../raspberrypi.nix ];

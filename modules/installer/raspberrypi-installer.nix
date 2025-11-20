@@ -1,4 +1,5 @@
-{ config, pkgs, modulesPath, lib, ... }:
+{ pkgs, modulesPath, lib, ... }:
+
 {
   # nixos' standard installer configuration as seen in
   # /installer/sd-card/sd-image-aarch64-installer.nix

@@ -1,5 +1,3 @@
-{ config, lib, pkgs, ... }:
-
 {
   # PrimaryGPU config, needed for Xorg to start
   # RaspberryOS adds this "OutputClass" section by default for all RPis

@@ -1,5 +1,4 @@
 let
-
   mkLinuxFor = pkgs: version: models: let
     argsFor = (import ./kernels.nix { inherit pkgs; }).${version};
     linuxVersionForModel = rpiModel: {

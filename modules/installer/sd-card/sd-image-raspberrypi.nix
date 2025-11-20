@@ -1,5 +1,7 @@
 # version of "modulesPath + /installer/sd-card/sd-image-aarch64.nix"
-{ config, pkgs, lib, modulesPath, ... }: {
+{ config, lib, modulesPath, ... }: 
+
+{
   imports = [
     (modulesPath + "/profiles/base.nix")
     (modulesPath + "/installer/sd-card/sd-image.nix")

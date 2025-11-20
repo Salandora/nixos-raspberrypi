@@ -4,7 +4,7 @@
 # with modifications
 # https://raw.githubusercontent.com/nvmd/raspberry-pi-nix/refs/heads/master/rpi/config.nix
 
-{ lib, config, pkgs, ... }:
+{ lib, config, ... }:
 let
   cfg = config.hardware.raspberry-pi;
 

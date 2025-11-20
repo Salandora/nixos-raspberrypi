@@ -1,5 +1,3 @@
-{ config, lib, pkgs, ... }:
-
 {
   # For displays connected to the RP1 (DPI/composite/MIPI DSI) (RPi5 only!)
   # see `display-vc4` for more info
