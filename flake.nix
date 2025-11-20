@@ -91,8 +91,6 @@
 
       sd-image = import ./modules/installer/sd-card/sd-image-raspberrypi.nix;
 
-      pisugar-3 = import ./modules/pisugar-3.nix;
-
       usb-gadget-ethernet = import ./modules/usb-gadget-ethernet.nix;
 
       raspberry-pi-5 = {
@@ -157,25 +155,10 @@
     packages = forSystems rpiSystems (system: let
       pkgs = self.legacyPackages.${system};
     in {
-      ffmpeg_4 = pkgs.ffmpeg_4;
-      ffmpeg_5 = pkgs.ffmpeg_5;
-      ffmpeg_6 = pkgs.ffmpeg_6;
-      ffmpeg_7 = pkgs.ffmpeg_7;
-      ffmpeg_7-headless = pkgs.ffmpeg_7-headless;
-
-      kodi = pkgs.kodi;
-      kodi-gbm = pkgs.kodi-gbm;
-      kodi-wayland = pkgs.kodi-wayland;
-
-      libcamera = pkgs.libcamera;
       libpisp = pkgs.libpisp;
-      libraspberrypi = pkgs.libraspberrypi;
-
+      
       raspberrypi-utils = pkgs.raspberrypi-utils;
       raspberrypi-udev-rules = (pkgs.callPackage ./pkgs/raspberrypi/udev-rules.nix {});
-      rpicam-apps = pkgs.rpicam-apps;
-
-      vlc = pkgs.vlc;
 
       # see legacyPackages.<system>.linuxAndFirmware for other versions of 
       # the bundle
@@ -187,20 +170,6 @@
         raspberrypifw raspberrypiWirelessFirmware;
 
       argononed = pkgs.callPackage "${inputs.argononed}/OS/nixos/pkg.nix" {};
-
-      pisugar3-kmod = let
-        targetKernel = pkgs.linux_rpi02;
-      in (pkgs.linuxPackagesFor targetKernel).callPackage ./pkgs/pisugar-kmod.nix {
-        pisugarVersion = "3";
-      };
-      pisugar2-kmod = let
-        targetKernel = pkgs.linux_rpi02;
-      in (pkgs.linuxPackagesFor targetKernel).callPackage ./pkgs/pisugar-kmod.nix {
-        pisugarVersion = "2";
-      };
-
-      pisugar-power-manager-rs = pkgs.callPackage ./pkgs/pisugar-power-manager-rs.nix {};
-
     });
 
     nixosConfigurations = let
