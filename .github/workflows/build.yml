@@ -1,0 +1,36 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - runner: ubuntu-24.04-arm
+            name: aarch64-linux
+            desc: build for aarch64 Linux
+    name: '${{ matrix.name }}: ${{ matrix.desc }}'
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: cachix/install-nix-action@v26
+        with:
+          extra_nix_config: |
+            sandbox = true
+
+      - name: Run build script
+        run: nix develop --command nix-build-to-folder
+
+      - name: Archive binary cache
+        run: tar -czf result-store.tar.gz result-store
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.name }}-binary-cache-${{ github.ref_name }}
+          path: result-store.tar.gz

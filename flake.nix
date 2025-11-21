@@ -69,6 +69,7 @@
           attic-client
           (pkgs.callPackage ./devshells/nix-build-to-cachix.nix {})
           (pkgs.callPackage ./devshells/nix-build-to-attic.nix {})
+          (pkgs.callPackage ./devshells/nix-build-to-folder.nix {})
         ];
       };
     });
@@ -156,7 +157,7 @@
       pkgs = self.legacyPackages.${system};
     in {
       libpisp = pkgs.libpisp;
-      
+
       raspberrypi-utils = pkgs.raspberrypi-utils;
       raspberrypi-udev-rules = (pkgs.callPackage ./pkgs/raspberrypi/udev-rules.nix {});
 
