@@ -6,22 +6,22 @@ writeShellApplication {
     set -euo pipefail
 
     declare -a nixos=(
-      rpi02-installer
-      rpi3-installer
-      rpi4-installer
-      rpi5-installer
+      # rpi02-installer
+      # rpi3-installer
+      # rpi4-installer
+      # rpi5-installer
     )
 
     declare -a packages=(
-      "libpisp"
+      # "libpisp"
 
-      "raspberrypi-utils"
-      "raspberrypi-udev-rules"
+      # "raspberrypi-utils"
+      # "raspberrypi-udev-rules"
 
       # linuxAndFirmware.default.*
-      "linux_rpi02"
+      # "linux_rpi02"
       "linux_rpi3"
-      "linux_rpi4"
+      # "linux_rpi4"
       "linux_rpi5"
       "raspberrypifw"
       "raspberrypiWirelessFirmware"
@@ -35,7 +35,7 @@ writeShellApplication {
 
       mkdir -p "''${storePath}"
 
-      nix build --no-link "''${targets[@]}"
+      nix build --accept-flake-config --no-link "''${targets[@]}"
       nix copy --no-check-sigs --to "file://''${storePath}" "''${targets[@]}"
     }
 
