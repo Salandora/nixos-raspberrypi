@@ -2,35 +2,69 @@ name: Build
 
 on:
   push:
-    branches:
-      - main
-      - develop
+  workflow_dispatch:
+
+env:
+  ALL_PACKAGES: |
+    linux_rpi3
+    linux_rpi5
+    raspberrypifw
+    raspberrypiWirelessFirmware
 
 jobs:
-  build:
+  build_kernels:
     strategy:
+      fail-fast: false
       matrix:
-        include:
-          - runner: ubuntu-24.04-arm
-            name: aarch64-linux
-            desc: build for aarch64 Linux
-    name: '${{ matrix.name }}: ${{ matrix.desc }}'
-    runs-on: ${{ matrix.runner }}
+        packages: 
+          - linux_rpi3
+          - linux_rpi5
+    runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v31
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - name: Build Kernel Package
+        run: nix --accept-flake-config build .#packages.aarch64-linux.${{ matrix.packages }}
 
-      - uses: cachix/install-nix-action@v26
-        with:
-          extra_nix_config: |
-            sandbox = true
 
-      - name: Run build script
-        run: nix develop --command nix-build-to-folder
+  build_packages:
+    strategy:
+      fail-fast: false
+      matrix:
+        packages:
+          - raspberrypifw
+          - raspberrypiWirelessFirmware
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v31
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - name: Build Packages
+        run: nix --accept-flake-config build .#packages.aarch64-linux.${{ matrix.packages }} 
 
-      - name: Archive binary cache
-        run: tar -czf result-store.tar.gz result-store
+  upload_artifacts:
+    needs: 
+      - build_kernels
+      - build_packages
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v31
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Create binary cache
+        run: |
+          mapfile -t packages < <(echo "$ALL_PACKAGES" | grep -v '^[[:space:]]*$')
+
+          mkdir -p result-store
+          for pkg in "${packages[@]}"; do
+            echo "Copy ${pkg} to binary cache"
+            nix --accept-flake-config copy --no-check-sigs --to file://${PWD}/result-store .#packages.aarch64-linux.$pkg
+          done
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.name }}-binary-cache-${{ github.ref_name }}
-          path: result-store.tar.gz
+          name: binary-cache
+          path: result-store
+          retention-days: 7
