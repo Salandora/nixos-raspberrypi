@@ -10,6 +10,9 @@ env:
     linux_rpi5
     raspberrypifw
     raspberrypiWirelessFirmware
+  ALL_INSTALLERS: |
+    rpi3-installer
+    rpi5-installer
 
 jobs:
   build_kernels:
@@ -27,7 +30,6 @@ jobs:
       - name: Build Kernel Package
         run: nix --accept-flake-config build .#packages.aarch64-linux.${{ matrix.packages }}
 
-
   build_packages:
     strategy:
       fail-fast: false
@@ -41,12 +43,32 @@ jobs:
       - uses: cachix/install-nix-action@v31
       - uses: DeterminateSystems/magic-nix-cache-action@main
       - name: Build Packages
-        run: nix --accept-flake-config build .#packages.aarch64-linux.${{ matrix.packages }} 
+        run: nix --accept-flake-config build .#packages.aarch64-linux.${{ matrix.packages }}
+
+  build_installers:
+    needs: 
+      - build_kernels
+      - build_packages
+    strategy:
+      fail-fast: false
+      matrix:
+        packages:
+          - rpi3-installer
+          - rpi5-installer
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v31
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - name: Build Installers
+        run: nix --accept-flake-config build .#nixosConfigurations.${{ matrix.packages }}.config.system.build.toplevel
+
 
   upload_artifacts:
     needs: 
       - build_kernels
       - build_packages
+      - build_installers
     runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v4
@@ -56,11 +78,17 @@ jobs:
       - name: Create binary cache
         run: |
           mapfile -t packages < <(echo "$ALL_PACKAGES" | grep -v '^[[:space:]]*$')
+          mapfile -t installers < <(echo "$ALL_INSTALLERS" | grep -v '^[[:space:]]*$')
 
           mkdir -p result-store
           for pkg in "${packages[@]}"; do
             echo "Copy ${pkg} to binary cache"
-            nix --accept-flake-config copy --no-check-sigs --to file://${PWD}/result-store .#packages.aarch64-linux.$pkg
+            nix --accept-flake-config copy --no-check-sigs --to file://${PWD}/result-store .#packages.aarch64-linux.${pkg}
+          done
+
+          for pkg in "${installers[@]}"; do
+            echo "Copy ${pkg} to binary cache"
+            nix --accept-flake-config copy --no-check-sigs --to file://${PWD}/result-store .#nixosConfigurations.${pkg}.config.system.build.toplevel
           done
 
       - uses: actions/upload-artifact@v4
