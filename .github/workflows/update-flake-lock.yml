@@ -1,0 +1,25 @@
+name: Update flake.lock
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 0'  # Weekly on Sundays at midnight
+
+jobs:
+  update_flake_lock:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: develop
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+      - name: Update flake.lock
+        uses: DeterminateSystems/update-flake-lock@main
+        with: 
+          pr-title: "Update flake.lock"
