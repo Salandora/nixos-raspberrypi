@@ -69,7 +69,6 @@
           attic-client
           (pkgs.callPackage ./devshells/nix-build-to-cachix.nix {})
           (pkgs.callPackage ./devshells/nix-build-to-attic.nix {})
-          (pkgs.callPackage ./devshells/nix-build-to-folder.nix {})
         ];
       };
     });
