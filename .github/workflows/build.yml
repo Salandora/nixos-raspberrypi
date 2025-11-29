@@ -93,7 +93,7 @@ jobs:
           jq -r '.[] | to_entries[] | .value' | \
           while read -r path; do
             echo "Storing path: ${path}"
-            echo "nix copy --from \"\${store_path}\" \"${path}\"" >> result-store/copy-from-cache.sh
+            echo "nix copy --no-check-sigs --from \"\${store_path}\" \"${path}\"" >> result-store/copy-from-cache.sh
             nix --accept-flake-config copy --no-check-sigs --to "file://${PWD}/result-store/store" "${path}"
           done
 
