@@ -12,11 +12,7 @@
   };
 
   inputs = {
-    # use fork to allow disabling modules introduced by mkRemovedOptionModule
-    # and similar functions
-    # see PR nixos:nixpkgs#398456 (https://github.com/NixOS/nixpkgs/pull/398456)
-    # nixpkgs.url = "github:nvmd/nixpkgs/modules-with-keys-25.05";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
 
     argononed = {
       # url = "git+file:../argononed?shallow=1";
@@ -26,11 +22,8 @@
     };
 
     nixos-images = {
-      # url = "github:nix-community/nixos-images";
-      url = "github:nvmd/nixos-images/sdimage-installer";
-      # url = "git+file:../nixos-images?shallow=1";
+      url = "github:nix-community/nixos-images";
       inputs.nixos-stable.follows = "nixpkgs";
-      inputs.nixos-unstable.follows = "nixpkgs";
     };
 
     flake-compat.url = "github:edolstra/flake-compat";

@@ -36,37 +36,51 @@
         "nixos-stable": [
           "nixpkgs"
         ],
-        "nixos-unstable": [
-          "nixpkgs"
-        ]
+        "nixos-unstable": "nixos-unstable"
       },
       "locked": {
-        "lastModified": 1747747741,
-        "narHash": "sha256-LUOH27unNWbGTvZFitHonraNx0JF/55h30r9WxqrznM=",
-        "owner": "nvmd",
+        "lastModified": 1763981465,
+        "narHash": "sha256-qpxB9kGS/gsJjaqL+9L4FfmMylznIcWSFCVTfQTPdv0=",
+        "owner": "nix-community",
         "repo": "nixos-images",
-        "rev": "cbbd6db325775096680b65e2a32fb6187c09bbb4",
+        "rev": "250fb8947997a8ed51e4d3cd7ff6d5fb8c2c30d0",
         "type": "github"
       },
       "original": {
-        "owner": "nvmd",
-        "ref": "sdimage-installer",
+        "owner": "nix-community",
         "repo": "nixos-images",
         "type": "github"
       }
     },
+    "nixos-unstable": {
+      "locked": {
+        "lastModified": 1749401433,
+        "narHash": "sha256-HXIQzULIG/MEUW2Q/Ss47oE3QrjxvpUX7gUl4Xp6lnc=",
+        "ref": "nixpkgs-unstable",
+        "rev": "08fcb0dcb59df0344652b38ea6326a2d8271baff",
+        "shallow": true,
+        "type": "git",
+        "url": "https://github.com/NixOS/nixpkgs"
+      },
+      "original": {
+        "ref": "nixpkgs-unstable",
+        "shallow": true,
+        "type": "git",
+        "url": "https://github.com/NixOS/nixpkgs"
+      }
+    },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1764242076,
-        "narHash": "sha256-sKoIWfnijJ0+9e4wRvIgm/HgE27bzwQxcEmo2J/gNpI=",
+        "lastModified": 1764494334,
+        "narHash": "sha256-x2xCEXUlU4Ap56+t5HaoReOQ/bV/bIQ5rzTn/m+V3HQ=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "2fad6eac6077f03fe109c4d4eb171cf96791faa4",
+        "rev": "d542db745310b6929708d9abea513f3ff19b1341",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-unstable",
+        "ref": "nixos-25.11",
         "repo": "nixpkgs",
         "type": "github"
       }
