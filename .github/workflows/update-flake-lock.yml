@@ -18,7 +18,7 @@ jobs:
         with:
           ref: develop
       - name: Install Nix
-        uses: cachix/install-nix-action@v31
+        uses: nixbuild/nix-quick-install-action@v34
       - name: Update flake.lock
         uses: DeterminateSystems/update-flake-lock@main
         with: 
