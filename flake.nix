@@ -22,7 +22,8 @@
     };
 
     nixos-images = {
-      url = "github:nix-community/nixos-images";
+      # url = "github:nix-community/nixos-images";
+      url = "github:nvmd/nixos-images/sdimage-installer";
       inputs.nixos-stable.follows = "nixpkgs";
     };
 
