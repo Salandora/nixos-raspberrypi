@@ -53,10 +53,14 @@ jobs:
         packages:
           - raspberrypifw
           - raspberrypiWirelessFirmware
+          - mariadb-16k
+          - podman-16k
     runs-on: ubuntu-24.04-arm
     outputs:
       raspberrypifw: ${{ steps.build.outputs.path_raspberrypifw }}
       raspberrypiWirelessFirmware: ${{ steps.build.outputs.path_raspberrypiWirelessFirmware }}
+      mariadb-16k: ${{ steps.build.outputs.path_mariadb-16k }}
+      podman-16k: ${{ steps.build.outputs.path_podman-16k }}
     steps:
       - uses: actions/checkout@v4
       - name: Install Nix
