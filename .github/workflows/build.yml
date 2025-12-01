@@ -33,9 +33,9 @@ jobs:
         uses: nix-community/cache-nix-action@v6
         with:
           # restore and save a cache using this key
-          primary-key: nix-individual-${{ hashFiles('.github/workflows/build.yml') }}-${{ matrix.packages }}
+          primary-key: nix-individual-${{ matrix.packages }}
           # if there's no cache hit, restore a cache by this prefix
-          restore-prefixes-first-match: nix-common-${{ hashFiles('.github/workflows/build.yml') }}
+          restore-prefixes-first-match: nix-common-
           # collect garbage until the Nix store size (in bytes) is at most this number
           # before trying to save a new cache
           # 1G = 1073741824
@@ -71,9 +71,9 @@ jobs:
         uses: nix-community/cache-nix-action@v6
         with:
           # restore and save a cache using this key
-          primary-key: nix-individual-${{ hashFiles('.github/workflows/build.yml') }}-${{ matrix.packages }}
+          primary-key: nix-individual-${{ matrix.packages }}
           # if there's no cache hit, restore a cache by this prefix
-          restore-prefixes-first-match: nix-common-${{ hashFiles('.github/workflows/build.yml') }}
+          restore-prefixes-first-match: nix-common-
           # collect garbage until the Nix store size (in bytes) is at most this number
           # before trying to save a new cache
           # 1G = 1073741824
@@ -108,9 +108,9 @@ jobs:
         uses: nix-community/cache-nix-action@v6
         with:
           # restore and save a cache using this key
-          primary-key: nix-individual-${{ hashFiles('.github/workflows/build.yml') }}-${{ matrix.packages }}
+          primary-key: nix-individual-${{ matrix.packages }}
           # if there's no cache hit, restore a cache by this prefix
-          restore-prefixes-first-match: nix-common-${{ hashFiles('.github/workflows/build.yml') }}
+          restore-prefixes-first-match: nix-common-
           # collect garbage until the Nix store size (in bytes) is at most this number
           # before trying to save a new cache
           # 1G = 1073741824
@@ -140,16 +140,14 @@ jobs:
       - name: Restore Nix store
         uses: nix-community/cache-nix-action/restore@v6
         with:
-          primary-key: nix-common-${{ hashFiles('.github/workflows/build.yml') }}
-          # if no hit on the primary key, restore individual caches that match `build.yml`
+          primary-key: nix-common-
+          # if no hit on the primary key, restore individual caches
           restore-prefixes-all-matches: |
-            nix-individual-${{ hashFiles('.github/workflows/build.yml') }}
-            nix-individual-${{ hashFiles('.github/workflows/build.yml') }}
+            nix-individual-
           # do purge caches
           purge: true
-          # purge old versions of the `common` cache and any versions of individual caches
+          # purge old versions of individual caches
           purge-prefixes: |
-            nix-common-
             nix-individual-
           # created more than 0 seconds ago relative to the start of the `Post Restore` phase
           purge-created: 0
@@ -173,7 +171,7 @@ jobs:
         uses: nix-community/cache-nix-action/restore@v6
         with:
           # restore and save a cache using this key
-          primary-key: nix-common-${{ hashFiles('.github/workflows/build.yml') }}
+          primary-key: nix-common-
       - name: Collect store paths
         run: |
           mkdir -p result-store/store
