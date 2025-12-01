@@ -34,26 +34,21 @@
     rpiSystems = [ "aarch64-linux" "armv7l-linux" "armv6l-linux" ];
     allSystems = nixpkgs.lib.systems.flakeExposed;
     forSystems = systems: f: nixpkgs.lib.genAttrs systems (system: f system);
-    baseOverlays = [
-      self.overlays.pkgs
-      self.overlays.bootloader
-      self.overlays.vendor-kernel
-      self.overlays.vendor-firmware
-      self.overlays.kernel-and-firmware
-      self.overlays.vendor-pkgs
-    ];
     mkRpiPkgs = nixpkgs: system: import nixpkgs {
-      inherit system; 
-      overlays = baseOverlays;
-    };
-    mkRpi16kPkgs = nixpkgs: system: import nixpkgs {
-      inherit system;
-      overlays = baseOverlays ++ [ self.overlays.jemalloc-page-size-16k ];
-    };
+        inherit system; overlays = [
+          self.overlays.pkgs
 
+          self.overlays.bootloader
+          self.overlays.vendor-kernel
+          self.overlays.vendor-firmware
+          self.overlays.kernel-and-firmware
+
+          self.overlays.vendor-pkgs
+        ];
+      };
     mkLegacyPackagesFor = nixpkgs: forSystems rpiSystems (mkRpiPkgs nixpkgs);
-    mkLegacyPackages16kFor = nixpkgs: forSystems rpiSystems (mkRpi16kPkgs nixpkgs);
   in {
+
     devShells = forSystems allSystems (system: let
       pkgs = nixpkgs.legacyPackages.${system};
     in {
@@ -142,7 +137,6 @@
       kernel-and-firmware = import ./overlays/linux-and-firmware.nix;
 
       libpisp-default-config-path = import ./overlays/libpisp-default-config-path.nix;
-      pkgs-page-size-16k = import ./overlays/pkgs-page-size-16k.nix;
     };
 
     # "RPi world": nixpkgs with all overlays applied "globally", i.e.
@@ -151,11 +145,9 @@
     #   nixpkgs channel had to be made
     # * binary cache is generated from this package set
     legacyPackages = mkLegacyPackagesFor nixpkgs;
-    legacyPackages16k = mkLegacyPackages16kFor nixpkgs;
 
     packages = forSystems rpiSystems (system: let
       pkgs = self.legacyPackages.${system};
-      pkgs16k = self.legacyPackages16k.${system};
     in {
       libpisp = pkgs.libpisp;
 
@@ -172,9 +164,6 @@
         raspberrypifw raspberrypiWirelessFirmware;
 
       argononed = pkgs.callPackage "${inputs.argononed}/OS/nixos/pkg.nix" {};
-
-      mariadb-16k = pkgs16k.mariadb;
-      podman-16k = pkgs16k.podman;
     });
 
     nixosConfigurations = let
@@ -183,7 +172,7 @@
       mkNixOSRPiInstaller = modules: self.lib.nixosInstaller {
         specialArgs = inputs // { nixos-raspberrypi = self; };
         modules = [
-          # nixos-images.nixosModules.sdimage-installer
+          nixos-images.nixosModules.sdimage-installer
           ({ config, lib, modulesPath, ... }: {
             disabledModules = [
               # disable the sd-image module that nixos-images uses

@@ -6,6 +6,5 @@
   
   nixpkgs.overlays = lib.mkBefore [
     self.overlays.jemalloc-page-size-16k
-    self.overlays.pkgs-page-size-16k
   ];
 }
