@@ -43,12 +43,13 @@ jobs:
       - name: Build SD-Image
         id : sdimages
         run: |
-          nix_store_path=$(nix --accept-flake-config build .#installerImages.${{ matrix.raspberrypi }}  --print-out-paths)
-          echo "sdImage_${{ matrix.raspberrypi }}=$nix_store_path" >> $GITHUB_ENV
+          nix --accept-flake-config build .#installerImages.${{ matrix.raspberrypi }}
 
       - name: Collect
         run: |
           mkdir -p result-store/store
+
+          cp -r "result/sd-image" result-store/
 
           echo "#!/bin/bash" > result-store/copy-from-cache.sh
           echo "set -euo pipefail" >> result-store/copy-from-cache.sh
@@ -57,7 +58,6 @@ jobs:
           echo "nix copy --no-check-sigs --from \"\${store_path}\" \"${path_${{ matrix.raspberrypi }}}\"" >> result-store/copy-from-cache.sh
           nix --accept-flake-config copy --no-check-sigs --to "file://${PWD}/result-store/store" "${path_${{ matrix.raspberrypi }}}"
 
-          cp "${sdImage_${{ matrix.raspberrypi }}}/sd-image/*" result-store/
 
       - uses: actions/upload-artifact@v4
         with:
