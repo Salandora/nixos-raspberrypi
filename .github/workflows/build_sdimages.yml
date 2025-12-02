@@ -35,13 +35,11 @@ jobs:
             nix-individual-raspberrypi
 
       - name: Build Installer
-        id : build
         run: |
           nix_store_path=$(nix --accept-flake-config build .#nixosConfigurations.${{ matrix.raspberrypi }}-installer.config.system.build.toplevel --print-out-paths)
           echo "path_${{ matrix.raspberrypi }}=$nix_store_path" >> $GITHUB_ENV
 
       - name: Build SD-Image
-        id : sdimages
         run: |
           nix --accept-flake-config build .#installerImages.${{ matrix.raspberrypi }}
 
