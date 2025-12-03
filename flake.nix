@@ -18,13 +18,6 @@
     # nixpkgs.url = "github:nvmd/nixpkgs/modules-with-keys-25.05";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    argononed = {
-      # url = "git+file:../argononed?shallow=1";
-      # url = "git+https://gitlab.com/DarkElvenAngel/argononed.git";
-      url = "github:nvmd/argononed";
-      flake = false;
-    };
-
     nixos-images = {
       # url = "github:nix-community/nixos-images";
       url = "github:nvmd/nixos-images/sdimage-installer";
@@ -36,7 +29,7 @@
     flake-compat.url = "github:edolstra/flake-compat";
   };
 
-  outputs = { self, nixpkgs, argononed, nixos-images, ... }@inputs: let
+  outputs = { self, nixpkgs, nixos-images, ... }@inputs: let
     rpiSystems = [ "aarch64-linux" "armv7l-linux" "armv6l-linux" ];
     allSystems = nixpkgs.lib.systems.flakeExposed;
     forSystems = systems: f: nixpkgs.lib.genAttrs systems (system: f system);
@@ -111,8 +104,6 @@
         };
         display-vc4 = import ./modules/display-vc4.nix;
         bluetooth = import ./modules/bluetooth.nix;
-        # work-in-progress, untested
-        case-argonone = import ./modules/case-argononev2.nix { inherit argononed; };
       };
 
       raspberry-pi-3 = {
@@ -168,8 +159,6 @@
         linux_rpi3 linuxPackages_rpi3
         linux_rpi02 linuxPackages_rpi02
         raspberrypifw raspberrypiWirelessFirmware;
-
-      argononed = pkgs.callPackage "${inputs.argononed}/OS/nixos/pkg.nix" {};
     });
 
     nixosConfigurations = let
