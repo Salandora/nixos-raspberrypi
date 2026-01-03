@@ -33,7 +33,7 @@ jobs:
         uses: nix-community/cache-nix-action@v6
         with:
           # restore and save a cache using this key
-          primary-key: nix-individual-${{ matrix.packages }}
+          primary-key: nix-individual-${{ github.ref_name }}-${{ matrix.packages }}
           # collect garbage until the Nix store size (in bytes) is at most this number
           # before trying to save a new cache
           # 1G = 1073741824
@@ -42,7 +42,7 @@ jobs:
           purge: true
           # purge old versions of individual caches
           purge-prefixes: |
-            nix-individual-${{ matrix.packages }}
+            nix-individual-${{ github.ref_name }}-${{ matrix.packages }}
           # created more than 0 seconds ago relative to the start of the `Post Restore` phase
           purge-created: 0
       - name: Build Kernel Package
@@ -72,7 +72,7 @@ jobs:
         uses: nix-community/cache-nix-action@v6
         with:
           # restore and save a cache using this key
-          primary-key: nix-individual-${{ matrix.packages }}
+          primary-key: nix-individual-${{ github.ref_name }}-${{ matrix.packages }}
           # collect garbage until the Nix store size (in bytes) is at most this number
           # before trying to save a new cache
           # 1G = 1073741824
@@ -81,7 +81,7 @@ jobs:
           purge: true
           # purge old versions of individual caches
           purge-prefixes: |
-            nix-individual-${{ matrix.packages }}
+            nix-individual-${{ github.ref_name }}-${{ matrix.packages }}
           # created more than 0 seconds ago relative to the start of the `Post Restore` phase
           purge-created: 0
       - name: Build Packages
@@ -107,7 +107,7 @@ jobs:
         with:
           primary-key: "nix-unused-key"
           restore-prefixes-all-matches: |
-            nix-individual-
+            nix-individual-${{ github.ref_name }}-
 
       - name: Collect store paths
         run: |
