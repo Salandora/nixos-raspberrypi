@@ -15,11 +15,9 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: develop
       - name: Install Nix
         uses: nixbuild/nix-quick-install-action@v34
       - name: Update flake.lock
         uses: DeterminateSystems/update-flake-lock@main
         with: 
-          pr-title: "Update flake.lock"
+          pr-title: "Update flake.lock (${{ github.ref_name }})"
