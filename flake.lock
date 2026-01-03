@@ -1,21 +1,5 @@
 {
   "nodes": {
-    "argononed": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1729566243,
-        "narHash": "sha256-DPNI0Dpk5aym3Baf5UbEe5GENDrSmmXVdriRSWE+rgk=",
-        "owner": "nvmd",
-        "repo": "argononed",
-        "rev": "16dbee54d49b66d5654d228d1061246b440ef7cf",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nvmd",
-        "repo": "argononed",
-        "type": "github"
-      }
-    },
     "flake-compat": {
       "locked": {
         "lastModified": 1767039857,
@@ -88,7 +72,6 @@
     },
     "root": {
       "inputs": {
-        "argononed": "argononed",
         "flake-compat": "flake-compat",
         "nixos-images": "nixos-images",
         "nixpkgs": "nixpkgs"

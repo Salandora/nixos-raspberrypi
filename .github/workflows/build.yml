@@ -33,7 +33,7 @@ jobs:
         uses: nix-community/cache-nix-action@v6
         with:
           # restore and save a cache using this key
-          primary-key: nix-individual-${{ matrix.packages }}
+          primary-key: nix-individual-${{ github.ref_name }}-${{ matrix.packages }}
           # collect garbage until the Nix store size (in bytes) is at most this number
           # before trying to save a new cache
           # 1G = 1073741824
@@ -42,13 +42,13 @@ jobs:
           purge: true
           # purge old versions of individual caches
           purge-prefixes: |
-            nix-individual-${{ matrix.packages }}
+            nix-individual-${{ github.ref_name }}-${{ matrix.packages }}
           # created more than 0 seconds ago relative to the start of the `Post Restore` phase
           purge-created: 0
       - name: Build Kernel Package
         id : build
         run: |
-          nix_store_path=$(nix --accept-flake-config build .#packages.aarch64-linux.${{ matrix.packages }} --print-out-paths)
+          nix_store_path=$(nix --accept-flake-config build .#packages.aarch64-linux.${{ matrix.packages }} --json | jq -c '.[].outputs | flatten')
           echo "path_${{ matrix.packages }}=$nix_store_path" >> "$GITHUB_OUTPUT"
 
   build_packages:
@@ -72,7 +72,7 @@ jobs:
         uses: nix-community/cache-nix-action@v6
         with:
           # restore and save a cache using this key
-          primary-key: nix-individual-${{ matrix.packages }}
+          primary-key: nix-individual-${{ github.ref_name }}-${{ matrix.packages }}
           # collect garbage until the Nix store size (in bytes) is at most this number
           # before trying to save a new cache
           # 1G = 1073741824
@@ -81,71 +81,19 @@ jobs:
           purge: true
           # purge old versions of individual caches
           purge-prefixes: |
-            nix-individual-${{ matrix.packages }}
+            nix-individual-${{ github.ref_name }}-${{ matrix.packages }}
           # created more than 0 seconds ago relative to the start of the `Post Restore` phase
           purge-created: 0
       - name: Build Packages
         id : build
         run: |
-          nix_store_path=$(nix --accept-flake-config build .#packages.aarch64-linux.${{ matrix.packages }} --print-out-paths)
+          nix_store_path=$(nix --accept-flake-config build .#packages.aarch64-linux.${{ matrix.packages }} --json | jq -c '.[].outputs | flatten')
           echo "path_${{ matrix.packages }}=$nix_store_path" >> "$GITHUB_OUTPUT"
-
-  # build_installers:
-  #   needs: 
-  #     - build_kernels
-  #     - build_packages
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       packages:
-  #         - rpi3-installer
-  #         - rpi5-installer
-  #   runs-on: ubuntu-24.04-arm
-  #   outputs:
-  #     rpi3-installer: ${{ steps.build.outputs.path_rpi3-installer }}
-  #     rpi5-installer: ${{ steps.build.outputs.path_rpi5-installer }}
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - name: Install Nix
-  #       uses: nixbuild/nix-quick-install-action@v34
-  #       with:
-  #         nix_conf: ${{ env.nix_conf }}
-
-  #     - name: Restore Nix store (all caches)
-  #       uses: nix-community/cache-nix-action/restore@v6
-  #       with:
-  #         primary-key: "nix-unused-key"
-  #         restore-prefixes-all-matches: |
-  #           nix-individual-
-
-  #     - name: Build Installers
-  #       id : build
-  #       run: |
-  #         nix_store_path=$(nix --accept-flake-config build .#nixosConfigurations.${{ matrix.packages }}.config.system.build.toplevel --print-out-paths)
-  #         echo "path_${{ matrix.packages }}=$nix_store_path" >> "$GITHUB_OUTPUT"
-
-  #     - name: Save Nix store
-  #       uses: nix-community/cache-nix-action/save@v6
-  #       with:
-  #         # save a cache using this key
-  #         primary-key: nix-individual-${{ matrix.packages }}
-  #         # collect garbage until the Nix store size (in bytes) is at most this number
-  #         # before trying to save a new cache
-  #         # 1G = 1073741824
-  #         gc-max-store-size-linux: 1G
-  #         # do purge caches
-  #         purge: true
-  #         # purge old versions of individual caches
-  #         purge-prefixes: |
-  #           nix-individual-${{ matrix.packages }}
-  #         # created more than 0 seconds ago relative to the start of the `Post Restore` phase
-  #         purge-created: 0
 
   upload_artifacts:
     needs: 
       - build_kernels
       - build_packages
-      # - build_installers
     runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v4
@@ -159,7 +107,7 @@ jobs:
         with:
           primary-key: "nix-unused-key"
           restore-prefixes-all-matches: |
-            nix-individual-
+            nix-individual-${{ github.ref_name }}-
 
       - name: Collect store paths
         run: |
@@ -170,7 +118,7 @@ jobs:
           echo "store_path=\"file://\${PWD}/\$1\"" >> result-store/copy-from-cache.sh
 
           echo '[ ${{ toJSON(needs.build_kernels.outputs) }}, ${{ toJSON(needs.build_packages.outputs) }} ]' | \
-          jq -r '.[] | to_entries[] | .value' | \
+          jq -r '.[] | flatten[] | fromjson | .[]' | \
           while read -r path; do
             echo "Storing path: ${path}"
             echo "nix copy --no-check-sigs --from \"\${store_path}\" \"${path}\"" >> result-store/copy-from-cache.sh
