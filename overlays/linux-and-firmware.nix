@@ -39,7 +39,7 @@ in self: super: {
     })
 
     (mkBundle self "v6_12_47" {
-      fw = self.raspberrypifw_20250916;
+      fw = self.raspberrypifw_20250915;
       wFw = self.raspberrypiWirelessFirmware_20251008;
     })
 

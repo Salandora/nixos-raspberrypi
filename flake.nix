@@ -66,50 +66,35 @@
 
     nixosModules = {
       trusted-nix-caches = import ./modules/trusted-nix-caches.nix;
-      nixpkgs-rpi = { config, lib, pkgs, ... }: import ./modules/nixpkgs-rpi.nix {
-        inherit config lib pkgs self;
-      };
+      nixpkgs-rpi = import ./modules/nixpkgs-rpi.nix;
 
-      bootloader = import ./modules/system/boot/loader/rpi;
-      # default = import ./modules/raspberrypi.nix;
-      default = { config, lib, pkgs, ... }: import ./modules/raspberrypi.nix {
-        inherit config lib pkgs self;
-      };
+      bootloader = import ./modules/system/boot/loader/raspberrypi;
+      default = import ./modules/raspberrypi.nix;
 
       sd-image = import ./modules/installer/sd-card/sd-image-raspberrypi.nix;
 
       usb-gadget-ethernet = import ./modules/usb-gadget-ethernet.nix;
 
       raspberry-pi-5 = {
-        base = { config, lib, pkgs, ... }: import ./modules/raspberry-pi-5 {
-          inherit config lib pkgs self;
-        };
+        base = import ./modules/raspberry-pi-5;
         display-vc4 = import ./modules/display-vc4.nix;
         display-rp1 = import ./modules/raspberry-pi-5/display-rp1.nix;
         bluetooth = import ./modules/bluetooth.nix;
-        page-size-16k = { config, lib, pkgs, ... }: import ./modules/raspberry-pi-5/page-size-16k.nix {
-          inherit config lib pkgs self;
-        };
+        page-size-16k = import ./modules/raspberry-pi-5/page-size-16k.nix;
       };
 
       raspberry-pi-4 = {
-        base = { config, lib, pkgs, ... }: import ./modules/raspberry-pi-4.nix {
-          inherit config lib pkgs self;
-        };
+        base = import ./modules/raspberry-pi-4.nix;
         display-vc4 = import ./modules/display-vc4.nix;
         bluetooth = import ./modules/bluetooth.nix;
       };
 
       raspberry-pi-3 = {
-        base = { config, lib, pkgs, ... }: import ./modules/raspberry-pi-3.nix {
-          inherit config lib pkgs self;
-        };
+        base = import ./modules/raspberry-pi-3.nix;
       };
 
       raspberry-pi-02 = {
-        base = { config, lib, pkgs, ... }: import ./modules/raspberry-pi-02.nix {
-          inherit config lib pkgs self;
-        };
+        base = import ./modules/raspberry-pi-02.nix;
         display-vc4 = import ./modules/display-vc4.nix;
         bluetooth = import ./modules/bluetooth.nix;
       };
