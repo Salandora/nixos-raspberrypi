@@ -9,7 +9,7 @@
     ./configtxt-config.nix
   ];
 
-  boot.loader.rPi = {
+  boot.loader.raspberry-pi = {
     enable = true;
   };
 

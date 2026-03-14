@@ -3,7 +3,7 @@
 with lib;
 
 let
-  cfg = config.boot.loader.rPi;
+  cfg = config.boot.loader.raspberry-pi;
   isAarch64 = pkgs.stdenv.hostPlatform.isAarch64;
 
   ubootBinName = if isAarch64 then "u-boot-rpi-arm64.bin" else "u-boot-rpi.bin";
@@ -153,6 +153,11 @@ let
       "-f ${cfg.firmwarePath}"
       "-c"
     ];
+    kernelboot-legacy-unsupported = builtins.concatStringsSep " " [
+      "${kernelbootBuilder}"
+      "-f ${cfg.firmwarePath}"
+      "-c"
+    ];
     kernel = builtins.concatStringsSep " " [
       "${mkBootloader pkgs}"
       "-g ${toString cfg.configurationLimit}"
@@ -172,6 +177,10 @@ let
       firmware = "${populateKernelbootBuilder}";
       boot = "${populateKernelbootBuilder}";
     };
+    kernelboot-legacy-unsupported = {
+      firmware = "${populateKernelbootBuilder}";
+      boot = "${populateKernelbootBuilder}";
+    };
     kernel = let cmd = builtins.concatStringsSep " " [
       "${mkBootloader pkgs.buildPackages}"
       "-g ${toString cfg.configurationLimit}"
@@ -184,9 +193,21 @@ let
 in
 
 {
+  imports = [
+    (mkRenamedOptionModule [ "boot" "loader" "raspberryPi" ] [ "boot" "loader" "raspberry-pi" ])
+  ];
+
+  disabledModules = [
+    # the module has been remove in nixpkgs, but that shouldn't prevent us
+    # from using the now free (!) name for our module
+    # mkRemovedOptionModule in `"modulesPath + rename.nix"`, unfortunately,
+    # prevents us from doing so in upstream nixpkgs
+    { key = "removedOptionModule#boot_loader_raspberryPi"; }
+  ];
+
   options = {
 
-    boot.loader.rPi = {
+    boot.loader.raspberry-pi = {
       enable = mkOption {
         default = false;
         type = types.bool;
@@ -218,7 +239,7 @@ in
           This package will be used to:
           - install RaspberryPi firmware a.k.a "boot code" from
           - install device tree files from when
-            `boot.loader.raspberryPi.useGenerationDeviceTree == false`.
+            `boot.loader.raspberry-pi.useGenerationDeviceTree == false`.
         '';
       };
 
@@ -257,7 +278,7 @@ in
           Whether to use device tree supplied by:
           - the generation's kernel (when `true`)
           - or from the vendor's firmware package set with
-            `boot.loader.raspberryPi.firmwarePackage` (when `false`)
+            `boot.loader.raspberry-pi.firmwarePackage` (when `false`)
 
           `kernelboot` (legacy), `uboot`: Note that this affects all generations,
             regardless of the setting value used in their configurations because
@@ -303,7 +324,7 @@ in
 
       bootloader = mkOption {
         default = if cfg.variant == "5" then "kernelboot" else "uboot";
-        type = types.enum [ "kernel" "kernelboot" "uboot" ];
+        type = types.enum [ "kernel" "uboot" "kernelboot" "kernelboot-legacy-unsupported" ];
         description = ''
           Bootloader to use:
           - `"uboot"`: U-Boot
@@ -386,6 +407,24 @@ in
 
   config = mkMerge [
     (mkIf cfg.enable {
+      warnings =
+        lib.optional (cfg.bootloader == "kernelboot") ''
+          RaspberryPi bootloader: "kernelboot" is deprecated, please migrate to "kernel"
+
+          You're using boot.loader.raspberry-pi.bootloader = "${config.boot.loader.raspberry-pi.bootloader}",
+          which is deprecated and will be removed in the future versions of nixos-raspberrypi.
+          Please migrate to `kernel` bootloader, which provides many advantages over the legacy `kernelboot`.
+          See [PR#61](https://github.com/nvmd/nixos-raspberrypi/pull/61) for more information.
+
+          If you still want to keep the behavior of the old bootloader,
+          please let us know about your usecase and enforce it explicitly with
+          `boot.loader.raspberry-pi.bootloader = "kernelboot-legacy-unsupported"` in your configuration.
+
+          This will ensure that your bootloader stays "kernelboot" even when the default booloader
+          will be changed to "kernel" (for selected boards currently using "kernelboot").
+          The "-legacy-unsupported" suffix will silence this warning until the final deletion.
+        '';
+
       assertions = let
         supportAarch64 = [ "02" "3" "4" "5" ];
       in singleton {
@@ -397,8 +436,8 @@ in
         '';
       };
       boot.loader.grub.enable = false;
-      boot.loader.rPi.firmwarePopulateCmd = populateCmds.${cfg.bootloader}.firmware;
-      boot.loader.rPi.bootPopulateCmd = populateCmds.${cfg.bootloader}.boot;
+      boot.loader.raspberry-pi.firmwarePopulateCmd = populateCmds.${cfg.bootloader}.firmware;
+      boot.loader.raspberry-pi.bootPopulateCmd = populateCmds.${cfg.bootloader}.boot;
     })
 
     (mkIf (cfg.enable && (cfg.bootloader == "kernel")) {
@@ -423,7 +462,7 @@ in
       };
     })
 
-    (mkIf (cfg.enable && (builtins.elem cfg.bootloader [ "kernelboot" "kernel" ])) {
+    (mkIf (cfg.enable && (builtins.elem cfg.bootloader [ "kernel" "kernelboot" "kernelboot-legacy-unsupported" ])) {
       hardware.raspberry-pi.config = {
         all = {
           options = {

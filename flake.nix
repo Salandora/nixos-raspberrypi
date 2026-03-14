@@ -169,7 +169,7 @@
             ];
             # nixos-images sets this with `mkForce`, thus `mkOverride 40`
             image.baseName = let
-              cfg = config.boot.loader.rPi;
+              cfg = config.boot.loader.raspberry-pi;
             in lib.mkOverride 40 "nixos-installer-rpi${cfg.variant}-${cfg.bootloader}";
           })
         ] ++ modules;
@@ -191,7 +191,7 @@
         ];
 
         system.nixos.tags = let
-          cfg = config.boot.loader.rPi;
+          cfg = config.boot.loader.raspberry-pi;
         in [
           "raspberry-pi-${cfg.variant}"
           cfg.bootloader
