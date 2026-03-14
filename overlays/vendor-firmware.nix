@@ -187,7 +187,6 @@ self: super: { # final: prev:
         hash = "sha256-5ywIPs3lpmqVOVP3B75H577fYkkucDqB7htY2U1DW8U=";
       })
     ];
-    __intentionallyOverridingVersion = true;
   });
 
   raspberrypiWirelessFirmware_20241223 = super.raspberrypiWirelessFirmware.overrideAttrs (old: {
