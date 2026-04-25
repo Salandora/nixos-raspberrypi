@@ -1,64 +1,64 @@
-name: Build Installers
+# name: Build Installers
 
-on:
-  workflow_dispatch:
+# on:
+#   workflow_dispatch:
 
-env:
-  nix_conf: |
-    substituters = https://cache.nixos.org/ https://nix-community.cachix.org https://cache.iog.io
-    trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ=
-    keep-env-derivations = true
-    keep-outputs = true
+# env:
+#   nix_conf: |
+#     substituters = https://cache.nixos.org/ https://nix-community.cachix.org https://cache.iog.io
+#     trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ=
+#     keep-env-derivations = true
+#     keep-outputs = true
 
-jobs:
-  build:
-    strategy:
-      fail-fast: false
-      matrix:
-        raspberrypi:
-          - rpi3
-          - rpi5
-    runs-on: ubuntu-24.04-arm
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install Nix
-        uses: nixbuild/nix-quick-install-action@v34
-        with:
-          nix_conf: ${{ env.nix_conf }}
+# jobs:
+#   build:
+#     strategy:
+#       fail-fast: false
+#       matrix:
+#         raspberrypi:
+#           - rpi3
+#           - rpi5
+#     runs-on: ubuntu-24.04-arm
+#     steps:
+#       - uses: actions/checkout@v4
+#       - name: Install Nix
+#         uses: nixbuild/nix-quick-install-action@v34
+#         with:
+#           nix_conf: ${{ env.nix_conf }}
 
-      - name: Restore Nix store
-        uses: nix-community/cache-nix-action/restore@v6
-        with:
-          primary-key: "nix-unused-key"
-          restore-prefixes-all-matches: |
-            nix-individual-linux_${{ matrix.raspberrypi }}
-            nix-individual-raspberrypi
+#       - name: Restore Nix store
+#         uses: nix-community/cache-nix-action/restore@v6
+#         with:
+#           primary-key: "nix-unused-key"
+#           restore-prefixes-all-matches: |
+#             nix-individual-linux_${{ matrix.raspberrypi }}
+#             nix-individual-raspberrypi
 
-      - name: Build Installer
-        run: |
-          nix_store_path=$(nix --accept-flake-config build .#nixosConfigurations.${{ matrix.raspberrypi }}-installer.config.system.build.toplevel --print-out-paths)
-          echo "path_${{ matrix.raspberrypi }}=$nix_store_path" >> $GITHUB_ENV
+#       - name: Build Installer
+#         run: |
+#           nix_store_path=$(nix --accept-flake-config build .#nixosConfigurations.${{ matrix.raspberrypi }}-installer.config.system.build.toplevel --print-out-paths)
+#           echo "path_${{ matrix.raspberrypi }}=$nix_store_path" >> $GITHUB_ENV
 
-      - name: Build SD-Image
-        run: |
-          nix --accept-flake-config build .#installerImages.${{ matrix.raspberrypi }}
+#       - name: Build SD-Image
+#         run: |
+#           nix --accept-flake-config build .#installerImages.${{ matrix.raspberrypi }}
 
-      - name: Collect
-        run: |
-          mkdir -p result-store/store
+#       - name: Collect
+#         run: |
+#           mkdir -p result-store/store
 
-          cp -r "result/sd-image" result-store/
+#           cp -r "result/sd-image" result-store/
 
-          echo "#!/bin/bash" > result-store/copy-from-cache.sh
-          echo "set -euo pipefail" >> result-store/copy-from-cache.sh
-          echo "store_path=\"file://\${PWD}/\$1\"" >> result-store/copy-from-cache.sh
+#           echo "#!/bin/bash" > result-store/copy-from-cache.sh
+#           echo "set -euo pipefail" >> result-store/copy-from-cache.sh
+#           echo "store_path=\"file://\${PWD}/\$1\"" >> result-store/copy-from-cache.sh
 
-          echo "nix copy --no-check-sigs --from \"\${store_path}\" \"${path_${{ matrix.raspberrypi }}}\"" >> result-store/copy-from-cache.sh
-          nix --accept-flake-config copy --no-check-sigs --to "file://${PWD}/result-store/store" "${path_${{ matrix.raspberrypi }}}"
+#           echo "nix copy --no-check-sigs --from \"\${store_path}\" \"${path_${{ matrix.raspberrypi }}}\"" >> result-store/copy-from-cache.sh
+#           nix --accept-flake-config copy --no-check-sigs --to "file://${PWD}/result-store/store" "${path_${{ matrix.raspberrypi }}}"
 
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: result-store-${{ matrix.raspberrypi }}
-          path: result-store
-          retention-days: 7
+#       - uses: actions/upload-artifact@v4
+#         with:
+#           name: result-store-${{ matrix.raspberrypi }}
+#           path: result-store
+#           retention-days: 7

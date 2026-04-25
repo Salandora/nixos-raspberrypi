@@ -1,132 +1,132 @@
-name: Build
+# name: Build
 
-on:
-  push:
-  workflow_dispatch:
+# on:
+#   push:
+#   workflow_dispatch:
 
-env:
-  nix_conf: |
-    substituters = https://cache.nixos.org/ https://nix-community.cachix.org https://cache.iog.io
-    trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ=
-    keep-env-derivations = true
-    keep-outputs = true
+# env:
+#   nix_conf: |
+#     substituters = https://cache.nixos.org/ https://nix-community.cachix.org https://cache.iog.io
+#     trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ=
+#     keep-env-derivations = true
+#     keep-outputs = true
 
-jobs:
-  build_kernels:
-    strategy:
-      fail-fast: false
-      matrix:
-        packages: 
-          - linux_rpi3
-          - linux_rpi5
-    runs-on: ubuntu-24.04-arm
-    outputs:
-      linux_rpi3: ${{ steps.build.outputs.path_linux_rpi3 }}
-      linux_rpi5: ${{ steps.build.outputs.path_linux_rpi5 }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install Nix
-        uses: nixbuild/nix-quick-install-action@v34
-        with:
-          nix_conf: ${{ env.nix_conf }}
-      - name: Restore and save Nix store
-        uses: nix-community/cache-nix-action@v6
-        with:
-          # restore and save a cache using this key
-          primary-key: nix-individual-${{ github.ref_name }}-${{ matrix.packages }}
-          # collect garbage until the Nix store size (in bytes) is at most this number
-          # before trying to save a new cache
-          # 1G = 1073741824
-          gc-max-store-size-linux: 1G
-          # do purge caches
-          purge: true
-          # purge old versions of individual caches
-          purge-prefixes: |
-            nix-individual-${{ github.ref_name }}-${{ matrix.packages }}
-          # created more than 0 seconds ago relative to the start of the `Post Restore` phase
-          purge-created: 0
-      - name: Build Kernel Package
-        id : build
-        run: |
-          nix_store_path=$(nix --accept-flake-config build .#packages.aarch64-linux.${{ matrix.packages }} --json | jq -c '.[].outputs | flatten')
-          echo "path_${{ matrix.packages }}=$nix_store_path" >> "$GITHUB_OUTPUT"
+# jobs:
+#   build_kernels:
+#     strategy:
+#       fail-fast: false
+#       matrix:
+#         packages: 
+#           - linux_rpi3
+#           - linux_rpi5
+#     runs-on: ubuntu-24.04-arm
+#     outputs:
+#       linux_rpi3: ${{ steps.build.outputs.path_linux_rpi3 }}
+#       linux_rpi5: ${{ steps.build.outputs.path_linux_rpi5 }}
+#     steps:
+#       - uses: actions/checkout@v4
+#       - name: Install Nix
+#         uses: nixbuild/nix-quick-install-action@v34
+#         with:
+#           nix_conf: ${{ env.nix_conf }}
+#       - name: Restore and save Nix store
+#         uses: nix-community/cache-nix-action@v6
+#         with:
+#           # restore and save a cache using this key
+#           primary-key: nix-individual-${{ github.ref_name }}-${{ matrix.packages }}
+#           # collect garbage until the Nix store size (in bytes) is at most this number
+#           # before trying to save a new cache
+#           # 1G = 1073741824
+#           gc-max-store-size-linux: 1G
+#           # do purge caches
+#           purge: true
+#           # purge old versions of individual caches
+#           purge-prefixes: |
+#             nix-individual-${{ github.ref_name }}-${{ matrix.packages }}
+#           # created more than 0 seconds ago relative to the start of the `Post Restore` phase
+#           purge-created: 0
+#       - name: Build Kernel Package
+#         id : build
+#         run: |
+#           nix_store_path=$(nix --accept-flake-config build .#packages.aarch64-linux.${{ matrix.packages }} --json | jq -c '.[].outputs | flatten')
+#           echo "path_${{ matrix.packages }}=$nix_store_path" >> "$GITHUB_OUTPUT"
 
-  build_packages:
-    strategy:
-      fail-fast: false
-      matrix:
-        packages:
-          - raspberrypifw
-          - raspberrypiWirelessFirmware
-    runs-on: ubuntu-24.04-arm
-    outputs:
-      raspberrypifw: ${{ steps.build.outputs.path_raspberrypifw }}
-      raspberrypiWirelessFirmware: ${{ steps.build.outputs.path_raspberrypiWirelessFirmware }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install Nix
-        uses: nixbuild/nix-quick-install-action@v34
-        with:
-          nix_conf: ${{ env.nix_conf }}
-      - name: Restore and save Nix store
-        uses: nix-community/cache-nix-action@v6
-        with:
-          # restore and save a cache using this key
-          primary-key: nix-individual-${{ github.ref_name }}-${{ matrix.packages }}
-          # collect garbage until the Nix store size (in bytes) is at most this number
-          # before trying to save a new cache
-          # 1G = 1073741824
-          gc-max-store-size-linux: 500M
-          # do purge caches
-          purge: true
-          # purge old versions of individual caches
-          purge-prefixes: |
-            nix-individual-${{ github.ref_name }}-${{ matrix.packages }}
-          # created more than 0 seconds ago relative to the start of the `Post Restore` phase
-          purge-created: 0
-      - name: Build Packages
-        id : build
-        run: |
-          nix_store_path=$(nix --accept-flake-config build .#packages.aarch64-linux.${{ matrix.packages }} --json | jq -c '.[].outputs | flatten')
-          echo "path_${{ matrix.packages }}=$nix_store_path" >> "$GITHUB_OUTPUT"
+#   build_packages:
+#     strategy:
+#       fail-fast: false
+#       matrix:
+#         packages:
+#           - raspberrypifw
+#           - raspberrypiWirelessFirmware
+#     runs-on: ubuntu-24.04-arm
+#     outputs:
+#       raspberrypifw: ${{ steps.build.outputs.path_raspberrypifw }}
+#       raspberrypiWirelessFirmware: ${{ steps.build.outputs.path_raspberrypiWirelessFirmware }}
+#     steps:
+#       - uses: actions/checkout@v4
+#       - name: Install Nix
+#         uses: nixbuild/nix-quick-install-action@v34
+#         with:
+#           nix_conf: ${{ env.nix_conf }}
+#       - name: Restore and save Nix store
+#         uses: nix-community/cache-nix-action@v6
+#         with:
+#           # restore and save a cache using this key
+#           primary-key: nix-individual-${{ github.ref_name }}-${{ matrix.packages }}
+#           # collect garbage until the Nix store size (in bytes) is at most this number
+#           # before trying to save a new cache
+#           # 1G = 1073741824
+#           gc-max-store-size-linux: 500M
+#           # do purge caches
+#           purge: true
+#           # purge old versions of individual caches
+#           purge-prefixes: |
+#             nix-individual-${{ github.ref_name }}-${{ matrix.packages }}
+#           # created more than 0 seconds ago relative to the start of the `Post Restore` phase
+#           purge-created: 0
+#       - name: Build Packages
+#         id : build
+#         run: |
+#           nix_store_path=$(nix --accept-flake-config build .#packages.aarch64-linux.${{ matrix.packages }} --json | jq -c '.[].outputs | flatten')
+#           echo "path_${{ matrix.packages }}=$nix_store_path" >> "$GITHUB_OUTPUT"
 
-  upload_artifacts:
-    needs: 
-      - build_kernels
-      - build_packages
-    runs-on: ubuntu-24.04-arm
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install Nix
-        uses: nixbuild/nix-quick-install-action@v34
-        with:
-          nix_conf: ${{ env.nix_conf }}
+#   upload_artifacts:
+#     needs: 
+#       - build_kernels
+#       - build_packages
+#     runs-on: ubuntu-24.04-arm
+#     steps:
+#       - uses: actions/checkout@v4
+#       - name: Install Nix
+#         uses: nixbuild/nix-quick-install-action@v34
+#         with:
+#           nix_conf: ${{ env.nix_conf }}
           
-      - name: Restore all individual caches
-        uses: nix-community/cache-nix-action/restore@v6
-        with:
-          primary-key: "nix-unused-key"
-          restore-prefixes-all-matches: |
-            nix-individual-${{ github.ref_name }}-
+#       - name: Restore all individual caches
+#         uses: nix-community/cache-nix-action/restore@v6
+#         with:
+#           primary-key: "nix-unused-key"
+#           restore-prefixes-all-matches: |
+#             nix-individual-${{ github.ref_name }}-
 
-      - name: Collect store paths
-        run: |
-          mkdir -p result-store/store
+#       - name: Collect store paths
+#         run: |
+#           mkdir -p result-store/store
 
-          echo "#!/bin/bash" > result-store/copy-from-cache.sh
-          echo "set -euo pipefail" >> result-store/copy-from-cache.sh
-          echo "store_path=\"file://\${PWD}/\$1\"" >> result-store/copy-from-cache.sh
+#           echo "#!/bin/bash" > result-store/copy-from-cache.sh
+#           echo "set -euo pipefail" >> result-store/copy-from-cache.sh
+#           echo "store_path=\"file://\${PWD}/\$1\"" >> result-store/copy-from-cache.sh
 
-          echo '[ ${{ toJSON(needs.build_kernels.outputs) }}, ${{ toJSON(needs.build_packages.outputs) }} ]' | \
-          jq -r '.[] | flatten[] | fromjson | .[]' | \
-          while read -r path; do
-            echo "Storing path: ${path}"
-            echo "nix copy --no-check-sigs --from \"\${store_path}\" \"${path}\"" >> result-store/copy-from-cache.sh
-            nix --accept-flake-config copy --no-check-sigs --to "file://${PWD}/result-store/store" "${path}"
-          done
+#           echo '[ ${{ toJSON(needs.build_kernels.outputs) }}, ${{ toJSON(needs.build_packages.outputs) }} ]' | \
+#           jq -r '.[] | flatten[] | fromjson | .[]' | \
+#           while read -r path; do
+#             echo "Storing path: ${path}"
+#             echo "nix copy --no-check-sigs --from \"\${store_path}\" \"${path}\"" >> result-store/copy-from-cache.sh
+#             nix --accept-flake-config copy --no-check-sigs --to "file://${PWD}/result-store/store" "${path}"
+#           done
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: binary-cache
-          path: result-store
-          retention-days: 7
+#       - uses: actions/upload-artifact@v4
+#         with:
+#           name: binary-cache
+#           path: result-store
+#           retention-days: 7
