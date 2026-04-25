@@ -1,5 +1,5 @@
-self: super: { # final: prev:
-  raspberrypi-udev-rules = super.callPackage ../pkgs/raspberrypi/udev-rules.nix {};
+final: prev: {
+  raspberrypi-udev-rules = prev.callPackage ../pkgs/raspberrypi/udev-rules.nix {};
 
-  raspberrypi-utils = super.callPackage ../pkgs/raspberrypi/raspberrypi-utils.nix {};
+  raspberrypi-utils = prev.callPackage ../pkgs/raspberrypi/raspberrypi-utils.nix {};
 }
